@@ -2,7 +2,7 @@
 const entryList = document.querySelector("#bakes-container")
 const listItem = document.querySelectorAll(".item")
 const bakeForm = document.querySelector("#new-bake-form")
-
+const detailDisplay = document.querySelector("#detail")
 
 /****Listeners ******/
 bakeForm.addEventListener("click", handleFormSubmit)
@@ -13,14 +13,27 @@ entryList.addEventListener('click', e=> {
     }
 })
 
+function switchBake(item){
+    detailDisplay.innerHTML = `
+    <img src="${item.image_url}">
+    <h1>${item.name}</h1>
+    <p class="description">
+      ${item.description}
+    </p>
+    <form id="score-form" data-id="1">
+      <input value="${item.score}" type="number" name="score" min="0" max="10" step="1">
+      <input type="submit" value="Rate">
+    </form>
+    `
+}
 /*****THIS DID NOT WORK AS PLANNED */
 /****Display In detail View ****/
 function handleFormSubmit(event) {
     event.preventDefault()
     const newEntry = {
-        "name": name,
-        "image_url": image_url,
-        "description": description
+        name: event.target['name'].value,
+        image_url: event.target['image_url'].value,
+        description: event.target['description'].value
     }
   
     fetch("http://localhost:3000/bakes", {
@@ -39,8 +52,6 @@ function handleFormSubmit(event) {
         }
       })
       .then(newEntryData => {
-       
-        console.log(newEntryData)
 
         renderEntry(newEntryData)
       })
@@ -53,9 +64,7 @@ function renderEntry(item) {
     const entryLi = document.createElement('li')
     entryLi.className = "item"
     entryLi.dataset.id = item.id
-
     entryLi.innerText = `${item.name}`
-  
     entryList.append(entryLi)
   }
   
