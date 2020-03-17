@@ -68,7 +68,6 @@ function handleRateSubmit(event) {
 }
 
 function rateBake(bake) {
-    //bake.id is undefined
     return fetch(`http://localhost:3000/bakes/${bake.id}/ratings`, {
         method: 'POST',
         headers: {
