@@ -10,12 +10,8 @@ function renderAllBakeNames(bakeList) {
 function renderOneBakeName(bake) {
     const outerLi = document.createElement('li')
     outerLi.className = "bake-entry"
+    outerLi.id = `${bake.id}`
     outerLi.innerText = `${bake.name}`
-
-    const hiddenID = document.createElement('p')
-    hiddenID.innerText = `${bake.id}`
-    hiddenID.style.display = 'none'
-    outerLi.appendChild(hiddenID)
 
     bakesCont.append(outerLi)
     outerLi.addEventListener("click", handleEntryClick)
@@ -23,13 +19,10 @@ function renderOneBakeName(bake) {
 //-----Show Bake-----//
 function handleEntryClick(event) {
     bakeEntry = event.target
-    bakeEntryID = bakeEntry.childNodes[1].innerText
-    fetchBake(bakeEntryID).then(showBake)
+    fetchBake(bakeEntry).then(showBake)
 }
 
 function showBake(bake) {
-    console.log(bake)
-
     bakesDetail.innerHTML = `
     <img src=${bake.image_url} alt=${bake.name}>
     <h1>${bake.name}</h1>
@@ -55,7 +48,7 @@ function handleBakeSubmit(event) {
         image_url: newBakeImage,
         score: 0
     }
-    postBake(newBake).then(renderOneBakeName(newBake))
+    postBake(newBake).then(renderOneBakeName)
 
     console.log(event.target)
 }
@@ -72,8 +65,9 @@ function fetchBakes() {
     .then(data => data)
 }
 //------Get individual bakes------//
-function fetchBake(bakeID) {
-    return fetch(`http://localhost:3000/bakes/${bakeID}`, {
+function fetchBake(bake) {
+    //bake.id is undefined
+    return fetch(`http://localhost:3000/bakes/${bake.id}`, {
         headers: {
             'Content-type': 'application/json',
             'Accept': 'application/json'
