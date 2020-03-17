@@ -43,7 +43,21 @@ newBakeForm.addEventListener("submit", handleBakeSubmit)
 
 function handleBakeSubmit(event) {
     event.preventDefault()
-    console.log("you submitted")
+    
+    const form = event.target
+    newBakeName = form.childNodes[5].value
+    newBakeImage = form.childNodes[9].value
+    newBakeDes = form.childNodes[13].value
+
+    newBake = {
+        name: newBakeName,
+        description: newBakeDes,
+        image_url: newBakeImage,
+        score: 0
+    }
+    postBake(newBake).then(renderOneBakeName(newBake))
+
+    console.log(event.target)
 }
 
 //------Get All Bakes-----//
@@ -69,17 +83,18 @@ function fetchBake(bakeID) {
     .then(data => data)
 }
 //------Post Bake------//
-// function postBake() {
-//     return fetch(`http://localhost:3000/bakes`, {
-//         method: 'POST'
-//         headers: {
-//             'Content-type': 'application/json',
-//             'Accept': 'application/json'
-//         }
-//     })
-//     .then(res => res.json())
-//     .then(data => data)
-// }
+function postBake(newData) {
+    return fetch(`http://localhost:3000/bakes`, {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(newData)
+    })
+    .then(res => res.json())
+    .then(data => data)
+}
 //Initialize bakes
 fetchBakes().then(renderAllBakeNames)
 
