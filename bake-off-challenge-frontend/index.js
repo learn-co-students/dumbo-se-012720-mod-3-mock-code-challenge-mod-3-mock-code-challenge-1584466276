@@ -13,7 +13,7 @@ entryList.addEventListener('click', e=> {
     }
 })
 
-function switchBake(item){
+function itemDetail(item){
     detailDisplay.innerHTML = `
     <img src="${item.image_url}">
     <h1>${item.name}</h1>
@@ -66,6 +66,9 @@ function renderEntry(item) {
     entryLi.dataset.id = item.id
     entryLi.innerText = `${item.name}`
     entryList.append(entryLi)
+    entryLi.addEventListener('click', function (){
+        itemDetail(item)
+    })
   }
   
   function renderAllEntries(entries) {
