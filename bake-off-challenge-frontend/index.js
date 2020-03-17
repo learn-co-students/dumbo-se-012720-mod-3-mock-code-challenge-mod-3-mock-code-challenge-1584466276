@@ -1,6 +1,7 @@
 //Set variables
 const bakesCont = document.querySelector('#bakes-container')
 const bakesDetail = document.querySelector('#detail')
+const newBakeForm = document.querySelector('#new-bake-form')
 //------Put bakes in sidebar------//
 function renderAllBakeNames(bakeList) {
     bakeList.forEach(renderOneBakeName)
@@ -38,7 +39,12 @@ function showBake(bake) {
     `
 }
 //------Create Bake------//
+newBakeForm.addEventListener("submit", handleBakeSubmit)
 
+function handleBakeSubmit(event) {
+    event.preventDefault()
+    console.log("you submitted")
+}
 
 //------Get All Bakes-----//
 function fetchBakes() {
