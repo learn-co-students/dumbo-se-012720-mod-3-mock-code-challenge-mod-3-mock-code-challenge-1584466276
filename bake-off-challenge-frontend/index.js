@@ -1,5 +1,7 @@
 // your code here!
 console.log("🥧")
+const newBakeForm = document.querySelector("form#new-bake-form")
+newBakeForm.addEventListener("submit", handleSubmit)
 let detailsRendered = 0
 fetch("http://localhost:3000/bakes")
     .then(response => response.json())
@@ -19,7 +21,6 @@ function renderBake(bake) {
    innerLi.className = "item"
    outerUl.append(innerLi)
    innerLi.addEventListener("click", (ev) => {
-           debugger
            renderBakeDetails(bake)
    })
 }
@@ -41,12 +42,38 @@ function renderBakeDetails(bake) {
     if (detailsRendered === 0) {
         outerDiv.append(innerHeader)
     }
-    
+    const rateForm = innerHeader.querySelector("form#score-form")
+    rateForm.addEventListener("submit", updateRating)
+}
+function handleSubmit(event) {
+    const newBake = {
+         name:  event.target.name.value,
+         image_url:  event.target.image_url.value,
+         description:  event.target.description.value,
+         score: 0
+        }
+    debugger
+    fetch("http://localhost:3000/bakes", {
+       method: "POST",
+       headers: {
+                  "Content-Type": "application/json"
+                },
+       body: JSON.stringify(newBake)
+    })
+    .then(response => response.json())
+    .then(newBakeData => {
+      debugger
+      renderBake(newBakeData)
+      newBakeForm.reset()
+    })
+
+
+
 }
 
+function updateRating(event) {
+    debugger
 
 
 
-
-
-
+}
