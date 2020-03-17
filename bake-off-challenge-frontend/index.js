@@ -2,7 +2,7 @@
 const bakesContainer = document.querySelector(".side-list")
 const bakeDetailsDiv = document.querySelector("#detail")
 const createBakeForm = document.querySelector("#new-bake-form")
-
+const createScoreForm = bakeDetailsDiv.querySelector("#score-form")
 
 // EVENT LISTENERS
 // bakesContaier click event
@@ -13,7 +13,19 @@ bakesContainer.addEventListener("click", event => {
 })
 
 // form submit event
-createBakeForm.addEventListener("submit", handleCreateBakeFormSubmit)
+createBakeForm.addEventListener("submit", event => {
+    handleCreateBakeFormSubmit(event)
+})
+
+// // form submit rating
+// bakeDetailsDiv.addEventListener("submit", event => {
+//     event.preventDefault()
+//     form = event.target
+//     console.log(event.target.dataset.id)
+//     const newScore = {
+//         score = 
+//     }
+// })
 
 
 // FETCHERS?
@@ -31,7 +43,7 @@ const fetchBake = (bakeID) => {
 
 
 // EVENT HANDLERS
-function handleCreateBakeFormSubmit(event) {
+const handleCreateBakeFormSubmit = (event) => {
     event.preventDefault()
 
     form = event.target
@@ -53,6 +65,7 @@ function handleCreateBakeFormSubmit(event) {
     .then(newBakeData => renderOneBake(newBakeData))
 
     form.reset()
+    modal.style.display = "none"
 }
 
 
