@@ -9,8 +9,8 @@ function renderAllBakeNames(bakeList) {
 
 function renderOneBakeName(bake) {
     const outerLi = document.createElement('li')
-    outerLi.className = "bake-entry"
-    outerLi.id = `${bake.id}`
+    outerLi.className = "item"
+    outerLi.dataset.id = `${bake.id}`
     outerLi.innerText = `${bake.name}`
 
     bakesCont.append(outerLi)
@@ -27,8 +27,10 @@ function showBake(bake) {
     <img src=${bake.image_url} alt=${bake.name}>
     <h1>${bake.name}</h1>
     <p>${bake.description}</p>
-    <input type="number" id="score" name="score" min="1" max="10" placeholder=${bake.score}>
-    <button type="button">Rate</button>
+    <form id="score-form" data-id="1">
+    <input value=${bake.score} type="number" name="score" min="0" max="10" step="1">
+    <input type="submit" value="Rate">
+    </form>
     `
 }
 //------Create Bake------//
@@ -49,8 +51,6 @@ function handleBakeSubmit(event) {
         score: 0
     }
     postBake(newBake).then(renderOneBakeName)
-
-    console.log(event.target)
 }
 
 //------Get All Bakes-----//
@@ -67,7 +67,7 @@ function fetchBakes() {
 //------Get individual bakes------//
 function fetchBake(bake) {
     //bake.id is undefined
-    return fetch(`http://localhost:3000/bakes/${bake.id}`, {
+    return fetch(`http://localhost:3000/bakes/${bake.dataset.id}`, {
         headers: {
             'Content-type': 'application/json',
             'Accept': 'application/json'
