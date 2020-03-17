@@ -1,6 +1,6 @@
 // your code here!
 console.log("🥧")
-
+let detailsRendered = 0
 fetch("http://localhost:3000/bakes")
     .then(response => response.json())
     .then(bakeData => {
@@ -8,7 +8,7 @@ fetch("http://localhost:3000/bakes")
     })
 function renderAllBakes(inputBakes) {
          inputBakes.forEach(renderBake)
-         debugger
+         detailsRendered = 1
          renderBakeDetails(inputBakes[0])
 }
 function renderBake(bake) {
@@ -20,13 +20,13 @@ function renderBake(bake) {
    outerUl.append(innerLi)
    innerLi.addEventListener("click", (ev) => {
            debugger
-           renderBakeDetails(ev.target)
+           renderBakeDetails(bake)
    })
 }
 function renderBakeDetails(bake) {
    const outerDiv = document.querySelector("div#detail")
-   const innerDiv = document.createElement("div")
-   innerDiv.innerHTML = `
+   const innerHeader = outerDiv.firstElementChild
+   innerHeader.innerHTML = `
     <img src=${bake.image_url} alt=${bake.name}>
     <h1>${bake.name}</h1>
     <p class="description">
@@ -37,7 +37,11 @@ function renderBakeDetails(bake) {
       <input type="submit" value="Rate">
     </form>
     `
-    outerDiv.append(innerDiv)
+    innerHeader.className = ""
+    if (detailsRendered === 0) {
+        outerDiv.append(innerHeader)
+    }
+    
 }
 
 
