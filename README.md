@@ -85,7 +85,7 @@ The HTML of how you should render the selected bake in the `#detail` div should 
 
 You can either use the data from your initial fetch with ALL bakes to render the detail view, or you can make another fetch to the following endpoint:
 
-*Get One Bake*
+*Get One Bake* 
 ```
 Route: GET /bakes/:id
 
