@@ -1,8 +1,9 @@
 // your code here!
 console.log("🥧")
 const newBakeForm = document.querySelector("form#new-bake-form")
+const getWinner = document.querySelector("li#judge-bake-button")
 newBakeForm.addEventListener("submit", handleSubmit)
-let detailsRendered = 0
+getWinner.addEventListener("click", judgeBakes)
 fetch("http://localhost:3000/bakes")
     .then(response => response.json())
     .then(bakeData => {
@@ -10,7 +11,6 @@ fetch("http://localhost:3000/bakes")
     })
 function renderAllBakes(inputBakes) {
          inputBakes.forEach(renderBake)
-         detailsRendered = 1
          renderBakeDetails(inputBakes[0])
 }
 function renderBake(bake) {
@@ -38,42 +38,55 @@ function renderBakeDetails(bake) {
       <input type="submit" value="Rate">
     </form>
     `
-    innerHeader.className = ""
-    if (detailsRendered === 0) {
-        outerDiv.append(innerHeader)
-    }
+    outerDiv.append(innerHeader)
     const rateForm = innerHeader.querySelector("form#score-form")
-    rateForm.addEventListener("submit", updateRating)
+    rateForm.addEventListener("submit", (ev) => {
+        event.preventDefault()
+        const newScore = ev.target.score.value
+        fetch(`http://localhost:3000/bakes/${bake.id}/ratings`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer 699a9ff1-88ca-4d77-a26e-e4bc31cfc261"
+                     },
+            body: JSON.stringify({ score: newScore })
+        })
+    })
+    rateForm.score.value = bake.score
 }
 function handleSubmit(event) {
+    event.preventDefault()
     const newBake = {
          name:  event.target.name.value,
          image_url:  event.target.image_url.value,
-         description:  event.target.description.value,
-         score: 0
+         description:  event.target.description.value
         }
-    debugger
     fetch("http://localhost:3000/bakes", {
        method: "POST",
-       headers: {
-                  "Content-Type": "application/json"
-                },
+       headers: {              
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+                 },
        body: JSON.stringify(newBake)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.ok) {
+            return response.json()
+          } else {
+            throw Error("Bad request")
+          }
+        })
     .then(newBakeData => {
-      debugger
-      renderBake(newBakeData)
-      newBakeForm.reset()
+        renderBake(newBakeData)
     })
-
-
-
+//    .catch(error => alert(error))
+    newBakeForm.reset()
 }
-
-function updateRating(event) {
-    debugger
-
-
-
+function judgeBakes(event) {
+    fetch("http://localhost:3000/bakes/winner")
+    .then(response => response.json())
+    .then(bakeWinner => {
+          const winnerItem = document.querySelector(`li[data-id="${bakeWinner.id}"]`)
+          winnerItem.className = "item winner"
+    })
 }
