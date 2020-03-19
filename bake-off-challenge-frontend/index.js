@@ -1,98 +1,108 @@
-// DOM ELEMENTS
-const bakesContainer = document.querySelector(".side-list")
-const bakeDetailsDiv = document.querySelector("#detail")
-const createBakeForm = document.querySelector("#new-bake-form")
-const createScoreForm = bakeDetailsDiv.querySelector("#score-form")
+const bakesContainer = document.getElementById("bakes-container")
+const detailDiv = document.getElementById("detail")
+const createBakeForm = document.getElementById("new-bake-form")
 
-// EVENT LISTENERS
-// bakesContaier click event
+const fetchBakes = () => {
+    return fetch("http://localhost:3000/bakes")
+    .then(response => response.json())
+}
+
+fetchBakes()
+    .then(bakesData => {
+        renderAllBakes(bakesData)
+        renderDetailPage(bakesData[0])
+    })
+
+const renderAllBakes = (bakesData) => {
+    bakesData.forEach(renderOneBakeToSideBar)
+}
+
+const renderOneBakeToSideBar = (bakeData) => {
+    const bakeLi = document.createElement("li")
+    bakeLi.className = "item"
+    bakeLi.dataset.id = bakeData.id
+    bakeLi.innerText = bakeData.name
+    bakesContainer.append(bakeLi)
+}
+
 bakesContainer.addEventListener("click", event => {
     if (event.target.className === "item") {
         fetchBake(event.target.dataset.id)
     }
 })
 
-// form submit event
+const fetchBake = (bakeId) => {
+    return fetch(`http://localhost:3000/bakes/${bakeId}`)
+        .then(response => response.json())
+        .then(bakeData => renderDetailPage(bakeData))
+}
+const renderDetailPage = (bake) => {
+    detailDiv.innerHTML = `
+    <img src="${bake.image_url}" alt="${bake.name}">
+    <h1>${bake.name}</h1>
+    <p class="description">
+        ${bake.description}
+    </p>
+    <form id="score-form" data-id="${bake.id}">
+        <input value="${bake.score}" type="number" name="score" min="0" max="10" step="1">
+        <input type="submit" value="Rate">
+    </form>
+    `
+    document.getElementById("score-form").addEventListener("submit", event => {
+        handleScoreFormSubmit(event, bake)
+    })
+}
+
+const handleScoreFormSubmit = (event, bake) => {
+    event.preventDefault()
+    const newScore = event.target["score"].value
+    const bakeId = event.target.dataset.id
+    
+    fetch(`http://localhost:3000/bakes/${bakeId}/ratings`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 699a9ff1-88ca-4d77-a26e-e4bc31cfc261"
+        },
+        body: JSON.stringify({score: newScore})
+    })
+    .then(response => response.json())
+    .then(updatedBakeData => {
+        bake.score = updatedBakeData.score
+    })
+}
+
+
 createBakeForm.addEventListener("submit", event => {
     handleCreateBakeFormSubmit(event)
 })
 
-// // form submit rating
-// bakeDetailsDiv.addEventListener("submit", event => {
-//     event.preventDefault()
-//     form = event.target
-//     console.log(event.target.dataset.id)
-//     const newScore = {
-//         score = 
-//     }
-// })
-
-
-// FETCHERS?
-// fetch bake items, throw them to renderAllBakes
-fetch("http://localhost:3000/bakes")
-    .then(response => response.json())
-    .then(bakesData => renderAllBakes(bakesData))
-
-// fetch bake, throw it to renderDetailPage
-const fetchBake = (bakeID) => {
-    fetch(`http://localhost:3000/bakes/${bakeID}`)
-    .then(response => response.json())
-    .then(bakeData => renderDetailPage(bakeData))
-}
-
-
-// EVENT HANDLERS
 const handleCreateBakeFormSubmit = (event) => {
     event.preventDefault()
-
-    form = event.target
-
-    const newBake = {
+    const form = event.target
+    newBake = {
         name: form["name"].value,
         description: form["description"].value,
         image_url: form["image_url"].value
     }
+    createBake(newBake)
+    .then(bakeData => {
+        renderOneBakeToSideBar(bakeData)
+        renderDetailPage(bakeData)
+    })
 
-    fetch("http://localhost:3000/bakes", {
+    modal.style.display = "none"
+    form.reset()
+}
+
+const createBake = (bake) => {
+    return fetch("http://localhost:3000/bakes", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(newBake)
+        body: JSON.stringify(bake)
     })
     .then(response => response.json())
-    .then(newBakeData => renderOneBake(newBakeData))
-
-    form.reset()
-    modal.style.display = "none"
 }
 
-
-// RENDER HELPERS
-// renders all bake items, render bakes one by one using renderOneBake
-const renderAllBakes = (bakes) => {
-    bakes.forEach(renderOneBake)
-}
-
-// renders one bake item
-const renderOneBake = (bake) => {
-    const bakeLI = document.createElement("li")
-    bakeLI.className = "item"
-    bakeLI.dataset.id = bake.id
-    bakeLI.textContent = `${bake.name}`
-    bakesContainer.append(bakeLI)
-}
-
-//  show bake on detail page
-const renderDetailPage = (bake) => {
-    bakeDetailsDiv.innerHTML = `
-    <img src="${bake.image_url}" alt="${bake.name}">
-    <h1>${bake.name}</h1>
-    <p class="description">"${bake.description}"</p>
-    <form id="score-form" data-id="${bake.id}">
-        <input value="10" type="number" name="score" min="0" max="10" step="1">
-        <input type="submit" value="Rate">
-    </form>
-    `
-}
